@@ -48,7 +48,7 @@ struct ProcessParams {
 };
 
 ProcessOutcome run(const std::string &command_line,
-                    const ProcessParams &params);
+                   const ProcessParams &params);
 
 #endif
 

@@ -15,41 +15,39 @@
 using namespace runexe;
 using namespace std;
 
-InvocationVerdict verdictByState(const ProcessState& state)
-{
+InvocationVerdict verdictByState(const ProcessState &state) {
     if (state == BEFORE || state == RUNNING || state == FAILED)
         return FAIL;
-        
+
     if (state == EXITED)
         return SUCCESS;
-    
+
     if (state == TIME_EXCEEDED)
         return TIME_LIMIT_EXCEEDED;
-    
+
     if (state == MEMORY_EXCEEDED)
         return MEMORY_LIMIT_EXCEEDED;
-        
+
     if (state == IDLENESS_EXCEEDED)
         return IDLENESS_LIMIT_EXCEEDED;
-        
+
     fail("Unexpected state");
     return FAIL;
 }
 
-int main(int argc, char* argv[])
-{
+int main(int argc, char *argv[]) {
     InvocationParams invocationParams = processCommandLine(argc, argv);
-    
+
     ProcessParams params;
     string commandLine = invocationParams.getCommandLine();
-    
+
     if (invocationParams.isIdlenessChecking())
-	params.check_idleness = true;
+        params.check_idleness = true;
 
     long long timeLimit = invocationParams.getTimeLimit();
     if (timeLimit != InvocationParams::INFINITE_LIMIT_INT64)
         params.time_limit = timeLimit;
-    
+
     long long memoryLimit = invocationParams.getMemoryLimit();
     if (memoryLimit != InvocationParams::INFINITE_LIMIT_INT64)
         params.memory_limit = memoryLimit;
@@ -93,27 +91,27 @@ int main(int argc, char* argv[])
     ProcessOutcome outcome = run(commandLine, params);
 
     InvocationResult invocationResult;
-    
+
     invocationResult.setExitCode(outcome.exit_code);
     invocationResult.setComment(outcome.comment);
     invocationResult.setInvocationVerdict(verdictByState(outcome.state));
     invocationResult.setUserTime(outcome.time);
     invocationResult.setMemory(outcome.memory);
     invocationResult.setPassedTime(outcome.passed_time);
-    
-    Configuration& configuration = Configuration::getConfiguration();
+
+    Configuration &configuration = Configuration::getConfiguration();
 
     if (configuration.isScreenOutput())
         printInvocationResult(invocationParams, invocationResult);
 
     if (configuration.isXmlOutput())
         printXmlInvocationResult(invocationResult, configuration.getXmlFileName());
-        
+
     if (redirectOutput.empty())
-	remove(outcome.output_file.c_str());
-	
+        remove(outcome.output_file.c_str());
+
     if (redirectError.empty())
-	remove(outcome.error_file.c_str());
+        remove(outcome.error_file.c_str());
 
     if (configuration.isReturnExitCode())
         return invocationResult.getExitCode();

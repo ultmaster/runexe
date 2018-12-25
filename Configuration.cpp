@@ -5,21 +5,17 @@
 using namespace runexe;
 using namespace std;
 
-Configuration::Configuration()
-{
+Configuration::Configuration() {
 }
 
-Configuration::~Configuration()
-{
+Configuration::~Configuration() {
 }
 
-Configuration& Configuration::getConfiguration()
-{
+Configuration &Configuration::getConfiguration() {
     static Configuration configuration;
     static bool initialized = false;
 
-    if (!initialized)
-    {
+    if (!initialized) {
         configuration.setDefaults();
         initialized = true;
     }
@@ -27,8 +23,7 @@ Configuration& Configuration::getConfiguration()
     return configuration;
 }
 
-void Configuration::setDefaults()
-{
+void Configuration::setDefaults() {
     setReturnExitCode(RETURN_EXIT_CODE);
     setScreenOutput(SCREEN_OUTPUT);
     setXmlOutput(XML_OUTPUT);
@@ -37,62 +32,50 @@ void Configuration::setDefaults()
     setXmlFileName(XML_FILE_NAME);
 }
 
-bool Configuration::isReturnExitCode() const
-{
+bool Configuration::isReturnExitCode() const {
     return returnExitCode;
 }
 
-void Configuration::setReturnExitCode(bool returnExitCode)
-{
+void Configuration::setReturnExitCode(bool returnExitCode) {
     this->returnExitCode = returnExitCode;
 }
 
-bool Configuration::isScreenOutput() const
-{
+bool Configuration::isScreenOutput() const {
     return screenOutput;
 }
 
-void Configuration::setScreenOutput(bool screenOutput)
-{
+void Configuration::setScreenOutput(bool screenOutput) {
     this->screenOutput = screenOutput;
 }
 
-bool Configuration::isXmlOutput() const
-{
+bool Configuration::isXmlOutput() const {
     return xmlOutput;
 }
 
-void Configuration::setXmlOutput(bool xmlOutput)
-{
+void Configuration::setXmlOutput(bool xmlOutput) {
     this->xmlOutput = xmlOutput;
 }
 
-bool Configuration::isShowKernelModeTime() const
-{
+bool Configuration::isShowKernelModeTime() const {
     return showKernelModeTime;
 }
 
-void Configuration::setShowKernelModeTime(bool showKernelModeTime)
-{
+void Configuration::setShowKernelModeTime(bool showKernelModeTime) {
     this->showKernelModeTime = showKernelModeTime;
 }
 
-string Configuration::getStatisticsFileName() const
-{
+string Configuration::getStatisticsFileName() const {
     return statisticsFileName;
 }
 
-void Configuration::setStatisticsFileName(const string& statisticsFileName)
-{
+void Configuration::setStatisticsFileName(const string &statisticsFileName) {
     this->statisticsFileName = statisticsFileName;
 }
 
-string Configuration::getXmlFileName() const
-{
+string Configuration::getXmlFileName() const {
     return xmlFileName;
 }
 
-void Configuration::setXmlFileName(const std::string& xmlFileName)
-{
+void Configuration::setXmlFileName(const std::string &xmlFileName) {
     this->xmlFileName = xmlFileName;
 }

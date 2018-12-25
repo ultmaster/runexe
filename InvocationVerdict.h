@@ -3,10 +3,8 @@
 
 #include <string>
 
-namespace runexe
-{
-    enum InvocationVerdict
-    {
+namespace runexe {
+    enum InvocationVerdict {
         SUCCESS,
         FAIL,
         CRASH,

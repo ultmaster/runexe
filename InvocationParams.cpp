@@ -6,8 +6,7 @@
 using namespace runexe;
 using namespace std;
 
-void InvocationParams::setDefaults()
-{
+void InvocationParams::setDefaults() {
     timeLimit = INFINITE_LIMIT_INT64;
     memoryLimit = INFINITE_LIMIT_INT64;
     redirectInput = "";
@@ -23,20 +22,17 @@ void InvocationParams::setDefaults()
     idlenessChecking = true;
 }
 
-InvocationParams::InvocationParams(const vector<string>& cmdLineParams)
-{
+InvocationParams::InvocationParams(const vector<string> &cmdLineParams) {
     setDefaults();
 
     size_t tokensCount = cmdLineParams.size();
 
-    Configuration& configuration = Configuration::getConfiguration();
+    Configuration &configuration = Configuration::getConfiguration();
 
-    for (size_t currentTokenNumber = 1; currentTokenNumber < tokensCount; ++currentTokenNumber)
-    {
+    for (size_t currentTokenNumber = 1; currentTokenNumber < tokensCount; ++currentTokenNumber) {
         string currentToken = cmdLineParams[currentTokenNumber];
 
-        if (currentToken == "-t")
-        {
+        if (currentToken == "-t") {
             if (currentTokenNumber == tokensCount - 1)
                 crash("expected time limit value after \"-t\"");
 
@@ -46,19 +42,17 @@ InvocationParams::InvocationParams(const vector<string>& cmdLineParams)
             continue;
         }
 
-        if (currentToken == "-m")
-        {
+        if (currentToken == "-m") {
             if (currentTokenNumber == tokensCount - 1)
                 crash("expected memory limit value after \"-m\"");
 
             currentToken = cmdLineParams[++currentTokenNumber];
-            memoryLimit = parseMemoryLimit(currentToken);            
+            memoryLimit = parseMemoryLimit(currentToken);
 
             continue;
         }
 
-        if (currentToken == "-d")
-        {
+        if (currentToken == "-d") {
             if (currentTokenNumber == tokensCount - 1)
                 crash("expected directory after \"-d\"");
 
@@ -68,36 +62,29 @@ InvocationParams::InvocationParams(const vector<string>& cmdLineParams)
             continue;
         }
 
-        if (currentToken == "-l")
-        {
+        if (currentToken == "-l") {
             if (currentTokenNumber == tokensCount - 1)
                 crash("expected login name after \"-l\"");
 
             currentToken = cmdLineParams[++currentTokenNumber];
 
             size_t slashIdx = currentToken.find("/");
-            if (slashIdx != string::npos)
-            {
+            if (slashIdx != string::npos) {
                 userName = currentToken.substr(0, slashIdx);
                 domain = currentToken.substr(slashIdx + 1);
-            }
-            else
-            {
+            } else {
                 slashIdx = currentToken.find("\\");
-                if (slashIdx != string::npos)
-                {
+                if (slashIdx != string::npos) {
                     userName = currentToken.substr(0, slashIdx);
                     domain = currentToken.substr(slashIdx + 1);
-                }
-                else
+                } else
                     userName = currentToken;
             }
-            
+
             continue;
         }
 
-        if (currentToken == "-p")
-        {
+        if (currentToken == "-p") {
             if (currentTokenNumber == tokensCount - 1)
                 crash("expected password after \"-p\"");
 
@@ -107,8 +94,7 @@ InvocationParams::InvocationParams(const vector<string>& cmdLineParams)
             continue;
         }
 
-        if (currentToken == "-j")
-        {
+        if (currentToken == "-j") {
             if (currentTokenNumber == tokensCount - 1)
                 crash("expected dll file name after \"-j\"");
 
@@ -118,8 +104,7 @@ InvocationParams::InvocationParams(const vector<string>& cmdLineParams)
             continue;
         }
 
-        if (currentToken == "-i")
-        {
+        if (currentToken == "-i") {
             if (currentTokenNumber == tokensCount - 1)
                 crash("expected file name after \"-i\"");
 
@@ -129,8 +114,7 @@ InvocationParams::InvocationParams(const vector<string>& cmdLineParams)
             continue;
         }
 
-        if (currentToken == "-o")
-        {
+        if (currentToken == "-o") {
             if (currentTokenNumber == tokensCount - 1)
                 crash("expected file name after \"-o\"");
 
@@ -140,8 +124,7 @@ InvocationParams::InvocationParams(const vector<string>& cmdLineParams)
             continue;
         }
 
-        if (currentToken == "-e")
-        {
+        if (currentToken == "-e") {
             if (currentTokenNumber == tokensCount - 1)
                 crash("expected file name after \"-e\"");
 
@@ -151,30 +134,26 @@ InvocationParams::InvocationParams(const vector<string>& cmdLineParams)
             continue;
         }
 
-        if (currentToken == "-x")
-        {
+        if (currentToken == "-x") {
             configuration.setReturnExitCode(true);
 
             continue;
         }
 
-        if (currentToken == "-q")
-        {
+        if (currentToken == "-q") {
             configuration.setScreenOutput(false);
 
             continue;
         }
 
 
-        if (currentToken == "-z")
-        {
+        if (currentToken == "-z") {
             trustedProcess = true;
 
             continue;
         }
 
-        if (currentToken == "-s")
-        {
+        if (currentToken == "-s") {
             fail("not implemented option \"-s\"");
             /*
             if (currentTokenNumber == tokensCount - 1)
@@ -187,8 +166,7 @@ InvocationParams::InvocationParams(const vector<string>& cmdLineParams)
             */
         }
 
-        if (currentToken == "-D")
-        {
+        if (currentToken == "-D") {
             fail("not implemented option \"-D\"");
             /*
             if (currentTokenNumber == tokensCount - 1)
@@ -201,16 +179,14 @@ InvocationParams::InvocationParams(const vector<string>& cmdLineParams)
             */
         }
 
-        if (currentToken == "-xml" || currentToken == "--xml")
-        {
+        if (currentToken == "-xml" || currentToken == "--xml") {
             configuration.setScreenOutput(false);
             configuration.setXmlOutput(true);
 
             continue;
         }
 
-        if (currentToken == "-xmltof" || currentToken == "--xml-to-file")
-        {
+        if (currentToken == "-xmltof" || currentToken == "--xml-to-file") {
             if (currentTokenNumber == tokensCount - 1)
                 crash("expected file name after \"--xml-to-file\"");
 
@@ -221,15 +197,13 @@ InvocationParams::InvocationParams(const vector<string>& cmdLineParams)
             continue;
         }
 
-        if (currentToken == "--show-kernel-mode-time")
-        {
+        if (currentToken == "--show-kernel-mode-time") {
             configuration.setShowKernelModeTime(true);
 
             continue;
         }
 
-        if (currentToken == "--no-idleness-check")
-        {
+        if (currentToken == "--no-idleness-check") {
             idlenessChecking = false;
 
             continue;
@@ -243,22 +217,18 @@ InvocationParams::InvocationParams(const vector<string>& cmdLineParams)
     crash("unexpected end of parameters");
 }
 
-string InvocationParams::buildCommandLine(const vector<string>& params, size_t fromIndex)
-{
+string InvocationParams::buildCommandLine(const vector<string> &params, size_t fromIndex) {
     size_t paramsSize = params.size();
     string result = "";
 
-    for (size_t currentTokenNumber = fromIndex; currentTokenNumber < paramsSize; ++currentTokenNumber)
-    {
+    for (size_t currentTokenNumber = fromIndex; currentTokenNumber < paramsSize; ++currentTokenNumber) {
         string currentToken = params[currentTokenNumber];
 
         if (currentTokenNumber > fromIndex)
             result += " ";
 
-        for (size_t i = 0; i < currentToken.length(); i++)
-        {
-            if (currentToken[i] <= ' ')
-            {
+        for (size_t i = 0; i < currentToken.length(); i++) {
+            if (currentToken[i] <= ' ') {
                 currentToken = "\"" + currentToken + "\"";
                 break;
             }
@@ -270,22 +240,18 @@ string InvocationParams::buildCommandLine(const vector<string>& params, size_t f
     return result;
 }
 
-long long InvocationParams::parseTimeLimit(const string& _s)
-{
+long long InvocationParams::parseTimeLimit(const string &_s) {
     string s(_s);
 
     long long timeLimit;
 
     // In milliseconds (suffix "ms").
-    if (s.length() > 2 && s.find("ms") == s.length() - 2)
-    {
+    if (s.length() > 2 && s.find("ms") == s.length() - 2) {
         timeLimit = Strings::parseInt64(s.substr(0, s.length() - 2));
 
         if (timeLimit < 0 || timeLimit >= INFINITE_LIMIT / 1000)
             crash("invalid time limit");
-    }
-    else    
-    {
+    } else {
         // In seconds (suffix "s").
         if (s.length() > 1 && s[s.length() - 1] == 's')
             s = s.substr(0, s.length() - 1);
@@ -302,13 +268,11 @@ long long InvocationParams::parseTimeLimit(const string& _s)
     return timeLimit;
 }
 
-long long InvocationParams::parseMemoryLimit(const string& s)
-{
+long long InvocationParams::parseMemoryLimit(const string &s) {
     long long memoryLimit;
 
     // In kibibytes (suffix "K").
-    if (s.find("K") == s.length() - 1 || s.find("k") == s.length() - 1)
-    {
+    if (s.find("K") == s.length() - 1 || s.find("k") == s.length() - 1) {
         memoryLimit = Strings::parseInt64(s.substr(0, s.length() - 1));
 
         if (memoryLimit < 0 || memoryLimit >= INFINITE_LIMIT_INT64 / 1024)
@@ -316,9 +280,8 @@ long long InvocationParams::parseMemoryLimit(const string& s)
 
         memoryLimit *= 1024;
     }
-    // In mebibytes (suffix "M").
-    else if (s.find("M") == s.length() - 1 || s.find("m") == s.length() - 1)
-    {
+        // In mebibytes (suffix "M").
+    else if (s.find("M") == s.length() - 1 || s.find("m") == s.length() - 1) {
         memoryLimit = Strings::parseInt64(s.substr(0, s.length() - 1));
 
         if (memoryLimit < 0 || memoryLimit >= INFINITE_LIMIT_INT64 / 1024 / 1024)
@@ -326,9 +289,8 @@ long long InvocationParams::parseMemoryLimit(const string& s)
 
         memoryLimit *= 1024 * 1024;
     }
-    // In bytes (no suffix).
-    else
-    {
+        // In bytes (no suffix).
+    else {
         memoryLimit = Strings::parseInt64(s);
 
         if (memoryLimit < 0 || memoryLimit >= INFINITE_LIMIT_INT64)
@@ -338,67 +300,54 @@ long long InvocationParams::parseMemoryLimit(const string& s)
     return memoryLimit;
 }
 
-long long InvocationParams::getTimeLimit() const
-{
+long long InvocationParams::getTimeLimit() const {
     return timeLimit;
 }
 
-long long InvocationParams::getMemoryLimit() const
-{
+long long InvocationParams::getMemoryLimit() const {
     return memoryLimit;
 }
 
-string InvocationParams::getRedirectInput() const
-{
+string InvocationParams::getRedirectInput() const {
     return redirectInput;
 }
 
-string InvocationParams::getRedirectOutput() const
-{
+string InvocationParams::getRedirectOutput() const {
     return redirectOutput;
 }
 
-string InvocationParams::getRedirectError() const
-{
+string InvocationParams::getRedirectError() const {
     return redirectError;
 }
 
-string InvocationParams::getHomeDirectory() const
-{
+string InvocationParams::getHomeDirectory() const {
     return homeDirectory;
 }
 
-string InvocationParams::getCommandLine() const
-{
+string InvocationParams::getCommandLine() const {
     return commandLine;
 }
 
-bool InvocationParams::isTrustedProcess() const
-{
+bool InvocationParams::isTrustedProcess() const {
     return trustedProcess;
 }
 
-string InvocationParams::getUserName() const
-{
+string InvocationParams::getUserName() const {
     return userName;
 }
 
-string InvocationParams::getDomain() const
-{
+string InvocationParams::getDomain() const {
     return domain;
 }
 
-string InvocationParams::getPassword() const
-{
+string InvocationParams::getPassword() const {
     return password;
 }
 
-string InvocationParams::getInjectDll() const
-{
+string InvocationParams::getInjectDll() const {
     return injectDll;
 }
 
-bool InvocationParams::isIdlenessChecking() const
-{
+bool InvocationParams::isIdlenessChecking() const {
     return idlenessChecking;
 }

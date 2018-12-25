@@ -3,8 +3,7 @@
 
 #include <string>
 
-namespace runexe
-{
+namespace runexe {
     const int RUN_EXIT_FAILURE = 2147483647;
     const std::string version = "1.0";
     const std::string copyrightYears = "2009-2019";
@@ -16,34 +15,42 @@ namespace runexe
     const std::string STATISTICS_FILE_NAME = "";
     const std::string XML_FILE_NAME = "";
 
-    class Configuration
-    {
+    class Configuration {
     public:
-        static Configuration& getConfiguration();
+        static Configuration &getConfiguration();
+
         ~Configuration();
 
         bool isReturnExitCode() const;
+
         void setReturnExitCode(bool isReturnExitCode);
 
         bool isScreenOutput() const;
+
         void setScreenOutput(bool isScreenOutput);
 
         bool isXmlOutput() const;
+
         void setXmlOutput(bool isXmlOutput);
 
         bool isShowKernelModeTime() const;
+
         void setShowKernelModeTime(bool showKernelModeTime);
 
         std::string getStatisticsFileName() const;
-        void setStatisticsFileName(const std::string& statisticsFileName);
+
+        void setStatisticsFileName(const std::string &statisticsFileName);
 
         std::string getXmlFileName() const;
-        void setXmlFileName(const std::string& xmlFileName);
+
+        void setXmlFileName(const std::string &xmlFileName);
 
     private:
         Configuration();
-        Configuration(const Configuration& configuration);
-        Configuration& operator =(const Configuration& configuration);        
+
+        Configuration(const Configuration &configuration);
+
+        Configuration &operator=(const Configuration &configuration);
 
         bool returnExitCode;
         bool screenOutput;

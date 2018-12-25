@@ -8,17 +8,15 @@
 using namespace runexe;
 using namespace std;
 
-InvocationResult::InvocationResult()
-{
+InvocationResult::InvocationResult() {
     setDefaults();
 }
 
-InvocationResult::InvocationResult(const InvocationVerdict& invocationVerdict,
-                                   const string& comment)
-{
+InvocationResult::InvocationResult(const InvocationVerdict &invocationVerdict,
+                                   const string &comment) {
     if (invocationVerdict != CRASH && invocationVerdict != FAIL)
         fail("Crash/Fail InvocationResult constructor invoked for verdict " +
-                invocationVerdictToString(invocationVerdict));
+             invocationVerdictToString(invocationVerdict));
 
     setDefaults();
 
@@ -26,43 +24,35 @@ InvocationResult::InvocationResult(const InvocationVerdict& invocationVerdict,
     this->comment = comment;
 }
 
-InvocationVerdict InvocationResult::getInvocationVerdict() const
-{
+InvocationVerdict InvocationResult::getInvocationVerdict() const {
     return verdict;
 }
 
-int InvocationResult::getExitCode() const
-{
+int InvocationResult::getExitCode() const {
     return exitCode;
 }
 
-int InvocationResult::getUserTime() const
-{
-    return userTime;    
+int InvocationResult::getUserTime() const {
+    return userTime;
 }
 
-int InvocationResult::getKernelTime() const
-{
+int InvocationResult::getKernelTime() const {
     return kernelTime;
 }
 
-long long InvocationResult::getMemory() const
-{
+long long InvocationResult::getMemory() const {
     return memory;
 }
 
-string InvocationResult::getComment() const
-{
+string InvocationResult::getComment() const {
     return comment;
 }
 
-int InvocationResult::getPassedTime() const
-{
+int InvocationResult::getPassedTime() const {
     return passedTime;
 }
 
-void InvocationResult::setDefaults()
-{
+void InvocationResult::setDefaults() {
     verdict = FAIL;
     exitCode = RUN_EXIT_FAILURE;
     userTime = 0;
@@ -72,37 +62,30 @@ void InvocationResult::setDefaults()
     comment = "";
 }
 
-void InvocationResult::setInvocationVerdict(const InvocationVerdict& verdict)
-{
+void InvocationResult::setInvocationVerdict(const InvocationVerdict &verdict) {
     this->verdict = verdict;
 }
 
-void InvocationResult::setExitCode(int exitCode)
-{
+void InvocationResult::setExitCode(int exitCode) {
     this->exitCode = exitCode;
 }
 
-void InvocationResult::setUserTime(int userTime)
-{
+void InvocationResult::setUserTime(int userTime) {
     this->userTime = userTime;
 }
 
-void InvocationResult::setKernelTime(int kernelTime)
-{
+void InvocationResult::setKernelTime(int kernelTime) {
     this->kernelTime = kernelTime;
 }
 
-void InvocationResult::setMemory(long long memory)
-{
+void InvocationResult::setMemory(long long memory) {
     this->memory = memory;
 }
 
-void InvocationResult::setPassedTime(int passedTime)
-{
+void InvocationResult::setPassedTime(int passedTime) {
     this->passedTime = passedTime;
 }
 
-void InvocationResult::setComment(std::string comment)
-{
+void InvocationResult::setComment(std::string comment) {
     this->comment = comment;
 }

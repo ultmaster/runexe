@@ -5,32 +5,43 @@
 
 #include <string>
 
-namespace runexe
-{
-    class InvocationResult
-    {
+namespace runexe {
+    class InvocationResult {
     public:
         InvocationResult();
-        InvocationResult(const InvocationVerdict& invocationVerdict,
-                const std::string& comment);
+
+        InvocationResult(const InvocationVerdict &invocationVerdict,
+                         const std::string &comment);
 
         InvocationVerdict getInvocationVerdict() const;
+
         int getExitCode() const;
+
         int getUserTime() const;
+
         int getKernelTime() const;
+
         long long getMemory() const;
+
         int getPassedTime() const;
+
         std::string getComment() const;
 
-        void setInvocationVerdict(const InvocationVerdict& verdict);
+        void setInvocationVerdict(const InvocationVerdict &verdict);
+
         void setExitCode(int exitCode);
+
         void setUserTime(int userTime);
+
         void setKernelTime(int kernelTime);
+
         void setMemory(long long memory);
+
         void setPassedTime(int passedTime);
+
         void setComment(std::string comment);
 
-    private:        
+    private:
         InvocationVerdict verdict;
         int exitCode;
         int userTime;
