@@ -11,79 +11,37 @@
 using namespace runexe;
 using namespace std;
 
-void runexe::quit(unsigned int exitCode)
-{
+void runexe::quit(unsigned int exitCode) {
     exit(exitCode);
 }
 
-void runexe::showInfo()
-{
+void runexe::showInfo() {
     cout << endl
-        << "RunExe for Windows NT, Version " << version << endl
-        << "Copyright(c) Saratov State U Codecenter Development Team, "
-        << copyrightYears << endl
-        << "Based on runlib by Paul P. Komkoff Jr." << endl
-        << "Written by Dmitry Levshunov, Mike Mirzayanov" << endl << endl
-        << "Use \"runexe -h\" to get help information" << endl;    
+         << "RunExe for *NIX, Version " << version << endl
+         << "Copyright(c) Saratov State U Codecenter Development Team, "
+         << copyrightYears << endl
+         << "Based on runlib by Paul P. Komkoff Jr." << endl
+         << "Written by Dmitry Levshunov, Mike Mirzayanov" << endl
+         << "Modified by ultmaster, 2019" << endl
+         << "Use \"runexe -h\" to get help information" << endl;
 }
 
-void runexe::showHelp()
-{
+void runexe::showHelp() {
     showInfo();
 
     cout << endl
-        << "This program runs other program for given period of time with specified" << endl
-        << "  memory restrictions" << endl << endl
-        << "Command line format:" << endl
-        << "  runexe [<options>] <program> [<parameters>]" << endl
-        << "Where options are:" << endl
-        << "  -h               - show this help" << endl
-        << "  -t <time-limit>  - time limit, terminate after <time-limit> seconds, you can" << endl
-        << "                     add \"ms\" (without quotes) after the number to specify" << endl
-        << "                     time limit in milliseconds" << endl
-        << "  -m <mem-limit>   - memory limit, terminate if working set of the process" << endl
-        << "                     exceeds <mem-limit> bytes, you can add K or M to specify" << endl
-        << "                     memory limit in kilo- or megabytes" << endl
-        << "  -d <directory>   - make <directory> home directory for process" << endl
-        << "  -l <login-name>  - create process under <login-name>" << endl
-        << "  -p <password>    - logins user using <password>" << endl
-        << "  -j <file>        - injects specified dll file into the process" << endl
-        << "  -i <file>        - redirects standart input stream to the <file>" << endl
-        << "  -o <file>        - redirects standart output stream to the <file>" << endl
-        << "  -e <file>        - redirects standart error stream to the <file>" << endl
-        << "  -x               - return exit code of the application" << endl
-        << "  -q               - do not display any information on the screen" << endl
-        << "  -s <file>        - store statistics in then <file>" << endl
-        << "  -D var=value     - sets value of the environment variable, current environment" << endl
-        << "                     is completely ignored in this case" << endl
-        << "  -z               - run process in trusted mode" << endl
-        << "  --show-kernel-mode-time" << endl
-        << "                   - show user-mode and kernel-mode time" << endl
-        << "                     (shows only user-mode time without this option)" << endl
-        << "  --no-idleness-check" << endl
-        << "                   - switch off idleness checking" << endl
-        << "  --xml, -xml      - form xml document with invocation result information" << endl
-        << "                     and display them instead of standard output view" << endl
-        << "                     (other output and key \"-q\" ignored)" << endl
-        << "  --xml-to-file <file>, -xmltof <file>" << endl
-        << "                   - same as \"-xml\" but print xml result into the file <file>" << endl
-        << "                     and display usual information form" << endl
-        << "Examples:" << endl
-        << "  runexe -t 10s -m 32M -i 10s a.exe" << endl
-        << "  runexe -d \"C:\\My Directory\" a.exe" << endl
-        << "  runexe -l invoker -p password a.exe" << endl
-        << "  runexe -i input.txt -o output.txt -e error.txt a.exe" << endl;
+         << "This program runs other program for given period of time with specified" << endl
+         << "  memory restrictions" << endl << endl
+         << "See readme.md for help instructions" << endl;
 }
 
-void runexe::fail(const string& comment)
-{
-    Configuration& configuration = Configuration::getConfiguration();
+void runexe::fail(const string &comment) {
+    Configuration &configuration = Configuration::getConfiguration();
 
-    if (configuration.isScreenOutput())
-    {
+    if (configuration.isScreenOutput()) {
         cout << "Invocation failed" << endl
-            << "Comment: " << comment << endl << endl
-            << "Use \"runexe -h\" to get help information" << endl;
+             << "Comment: " << comment << endl << endl
+             << "Use \"runexe -h\" to get help information" << endl;
     }
 
     InvocationResult invocationResult = InvocationResult(FAIL, comment);
@@ -94,15 +52,13 @@ void runexe::fail(const string& comment)
     quit();
 }
 
-void runexe::crash(const string& comment)
-{
-    Configuration& configuration = Configuration::getConfiguration();
+void runexe::crash(const string &comment) {
+    Configuration &configuration = Configuration::getConfiguration();
 
-    if (configuration.isScreenOutput())
-    {
+    if (configuration.isScreenOutput()) {
         cout << "Invocation crashed" << endl
-            << "Comment: " << comment << endl << endl
-            << "Use \"runexe -h\" to get help information" << endl;
+             << "Comment: " << comment << endl << endl
+             << "Use \"runexe -h\" to get help information" << endl;
     }
 
     InvocationResult invocationResult = InvocationResult(CRASH, comment);
@@ -116,10 +72,8 @@ void runexe::crash(const string& comment)
         quit(0);
 }
 
-InvocationParams runexe::processParams(const vector<string>& params)
-{
-    if (params.size() > 1 && params[1] == "-h")
-    {
+InvocationParams runexe::processParams(const vector<string> &params) {
+    if (params.size() > 1 && params[1] == "-h") {
         showHelp();
         quit();
     }
@@ -127,10 +81,8 @@ InvocationParams runexe::processParams(const vector<string>& params)
     return InvocationParams(params);
 }
 
-InvocationParams runexe::processCommandLine(int argc, char* argv[])
-{
-    if (argc <= 1)
-    {
+InvocationParams runexe::processCommandLine(int argc, char *argv[]) {
+    if (argc <= 1) {
         showInfo();
         quit();
     }
@@ -143,10 +95,8 @@ InvocationParams runexe::processCommandLine(int argc, char* argv[])
 }
 
 void runexe::printTimes(double userTime, double kernelTime,
-                        double timeLimit, bool isTimeLimitExceeded)
-{
-    if (Configuration::getConfiguration().isShowKernelModeTime())
-    {
+                        double timeLimit, bool isTimeLimitExceeded) {
+    if (Configuration::getConfiguration().isShowKernelModeTime()) {
         if (isTimeLimitExceeded)
             cout << "  time consumed:" << endl
                  << "    user mode:   " << userTime << " of " << timeLimit << " sec" << endl
@@ -155,9 +105,7 @@ void runexe::printTimes(double userTime, double kernelTime,
             cout << "  time consumed:" << endl
                  << "    user mode:   " << userTime << " sec" << endl
                  << "    kernel mode: " << kernelTime << " sec" << endl;
-    }
-    else
-    {
+    } else {
         if (isTimeLimitExceeded)
             cout << "  time consumed: " << userTime << " of " << timeLimit << " sec" << endl;
         else
@@ -165,81 +113,78 @@ void runexe::printTimes(double userTime, double kernelTime,
     }
 }
 
-void runexe::printInvocationResult(const InvocationParams& invocationParams,
-                                   const InvocationResult& invocationResult)
-{
+void runexe::printInvocationResult(const InvocationParams &invocationParams,
+                                   const InvocationResult &invocationResult) {
     InvocationVerdict invocationVerdict = invocationResult.getInvocationVerdict();
 
     int exitCode = invocationResult.getExitCode();
-    double userTime = (double)invocationResult.getUserTime() / 1000.0;
-    double kernelTime = (double)invocationResult.getKernelTime() / 1000.0;
-    double passedTime = (double)invocationResult.getPassedTime() / 1000.0;
+    double userTime = (double) invocationResult.getUserTime() / 1000.0;
+    double kernelTime = (double) invocationResult.getKernelTime() / 1000.0;
+    double passedTime = (double) invocationResult.getPassedTime() / 1000.0;
     long long memory = invocationResult.getMemory();
 
-    double timeLimit = (double)invocationParams.getTimeLimit() / 1000.0;
+    double timeLimit = (double) invocationParams.getTimeLimit() / 1000.0;
     long long memoryLimit = invocationParams.getMemoryLimit();
 
     cout.precision(2);
     cout.setf(ios::fixed);
 
-    switch (invocationVerdict)
-    {
-    case SUCCESS :
-        cout << "Program successfully terminated" << endl
-             << "  exit code:     " << exitCode << endl,
-        printTimes(userTime, kernelTime),
-        cout << "  time passed:   " << passedTime << " sec" << endl
-             << "  peak memory:   " << memory << " bytes" << endl;
-        break;
+    switch (invocationVerdict) {
+        case SUCCESS :
+            cout << "Program successfully terminated" << endl
+                 << "  exit code:     " << exitCode << endl,
+                    printTimes(userTime, kernelTime),
+                    cout << "  time passed:   " << passedTime << " sec" << endl
+                         << "  peak memory:   " << memory << " bytes" << endl;
+            break;
 
-    case FAIL :
-        fail(invocationResult.getComment());
-        break;
+        case FAIL :
+            fail(invocationResult.getComment());
+            break;
 
-    case CRASH :
-        crash(invocationResult.getComment());
-        break;
+        case CRASH :
+            crash(invocationResult.getComment());
+            break;
 
-    case TIME_LIMIT_EXCEEDED :
-        cout << "Time limit exceeded" << endl
-             << "Program failed to terminate within " << timeLimit << " sec" << endl,
-        printTimes(userTime, kernelTime, timeLimit, true),
-        cout << "  time passed:   " << passedTime << " sec" << endl
-             << "  peak memory:   " << memory << " bytes" << endl;
-        break;
+        case TIME_LIMIT_EXCEEDED :
+            cout << "Time limit exceeded" << endl
+                 << "Program failed to terminate within " << timeLimit << " sec" << endl,
+                    printTimes(userTime, kernelTime, timeLimit, true),
+                    cout << "  time passed:   " << passedTime << " sec" << endl
+                         << "  peak memory:   " << memory << " bytes" << endl;
+            break;
 
-    case MEMORY_LIMIT_EXCEEDED :
-        cout << "Memory limit exceeded" << endl
-             << "Program tried to allocate more than " << memoryLimit << " bytes" << endl,
-        printTimes(userTime, kernelTime),
-        cout << "  time passed:   " << passedTime << " sec" << endl
-             << "  peak memory:   " << memory << " of " << memoryLimit << " bytes" << endl;
-        break;
+        case MEMORY_LIMIT_EXCEEDED :
+            cout << "Memory limit exceeded" << endl
+                 << "Program tried to allocate more than " << memoryLimit << " bytes" << endl,
+                    printTimes(userTime, kernelTime),
+                    cout << "  time passed:   " << passedTime << " sec" << endl
+                         << "  peak memory:   " << memory << " of " << memoryLimit << " bytes" << endl;
+            break;
 
-    case IDLENESS_LIMIT_EXCEEDED :
-        cout << "Idleness limit exceeded" << endl
-             << "Detected program idle " << endl,
-        printTimes(userTime, kernelTime),
-        cout << "  time passed:   " << passedTime << " sec" << endl
-             << "  peak memory:   " << memory << " bytes" << endl;
-        break;
+        case IDLENESS_LIMIT_EXCEEDED :
+            cout << "Idleness limit exceeded" << endl
+                 << "Detected program idle " << endl,
+                    printTimes(userTime, kernelTime),
+                    cout << "  time passed:   " << passedTime << " sec" << endl
+                         << "  peak memory:   " << memory << " bytes" << endl;
+            break;
 
-    case SECURITY_VIOLATION :
-        cout << "Security violation" << endl
-             << "Program tried to do some forbidden action" << endl,
-        printTimes(userTime, kernelTime),
-        cout << "  time passed:   " << passedTime << " sec" << endl
-             << "  peak memory:   " << memory << " bytes" << endl;
-        break;
+        case SECURITY_VIOLATION :
+            cout << "Security violation" << endl
+                 << "Program tried to do some forbidden action" << endl,
+                    printTimes(userTime, kernelTime),
+                    cout << "  time passed:   " << passedTime << " sec" << endl
+                         << "  peak memory:   " << memory << " bytes" << endl;
+            break;
 
-    default :
-        fail("unknown invocation verdict");
+        default :
+            fail("unknown invocation verdict");
     }
 }
 
-void runexe::printXmlInvocationResult(const InvocationResult& invocationResult,
-                                      const string& fileName)
-{
+void runexe::printXmlInvocationResult(const InvocationResult &invocationResult,
+                                      const string &fileName) {
     static bool firstCall = true;
 
     if (!firstCall)
@@ -252,48 +197,42 @@ void runexe::printXmlInvocationResult(const InvocationResult& invocationResult,
     result.push_back("");
     result.push_back("<invocationResult>");
     result.push_back("    <invocationVerdict>" +
-            invocationVerdictToString(invocationResult.getInvocationVerdict()) +
-            "</invocationVerdict>");
+                     invocationVerdictToString(invocationResult.getInvocationVerdict()) +
+                     "</invocationVerdict>");
     result.push_back("    <exitCode>" +
-            Strings::integerToString(invocationResult.getExitCode()) +
-            "</exitCode>");
+                     Strings::integerToString(invocationResult.getExitCode()) +
+                     "</exitCode>");
     result.push_back("    <processorUserModeTime>" +
-            Strings::integerToString(invocationResult.getUserTime()) +
-            "</processorUserModeTime>");
+                     Strings::integerToString(invocationResult.getUserTime()) +
+                     "</processorUserModeTime>");
     result.push_back("    <processorKernelModeTime>" +
-        Strings::integerToString(invocationResult.getKernelTime()) +
-        "</processorKernelModeTime>");
+                     Strings::integerToString(invocationResult.getKernelTime()) +
+                     "</processorKernelModeTime>");
     result.push_back("    <passedTime>" +
-            Strings::integerToString(invocationResult.getPassedTime()) +
-            "</passedTime>");
+                     Strings::integerToString(invocationResult.getPassedTime()) +
+                     "</passedTime>");
     result.push_back("    <consumedMemory>" +
-            Strings::integerToString(invocationResult.getMemory()) +
-            "</consumedMemory>");
+                     Strings::integerToString(invocationResult.getMemory()) +
+                     "</consumedMemory>");
     result.push_back("    <comment>" + invocationResult.getComment() +
-            "</comment>");
+                     "</comment>");
     result.push_back("</invocationResult>");
 
-    int resultSize = (int)result.size();
+    int resultSize = (int) result.size();
 
-    if (!fileName.empty())
-    {
-        
-        FILE* file = fopen(fileName.c_str(), "wt");
+    if (!fileName.empty()) {
 
-        if (NULL != file)
-        {
+        FILE *file = fopen(fileName.c_str(), "wt");
+
+        if (NULL != file) {
             for (int i = 0; i < resultSize; ++i)
                 fprintf(file, "%s\n", result[i].c_str());
 
             fclose(file);
-        }
-        else
-        {
+        } else {
             fail("can't open file '" + fileName + "'");
         }
-    }
-    else
-    {
+    } else {
         for (int i = 0; i < resultSize; ++i)
             printf("%s\n", result[i].c_str());
     }

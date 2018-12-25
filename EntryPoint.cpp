@@ -3,7 +3,7 @@
 #include "InvocationResult.h"
 #include "Strings.h"
 
-#include "process.h"
+#include "Process.h"
 
 #include <string>
 #include <cstdlib>
@@ -15,7 +15,7 @@
 using namespace runexe;
 using namespace std;
 
-InvocationVerdict verdictByState(const process_state& state)
+InvocationVerdict verdictByState(const ProcessState& state)
 {
     if (state == BEFORE || state == RUNNING || state == FAILED)
         return FAIL;
@@ -40,7 +40,7 @@ int main(int argc, char* argv[])
 {
     InvocationParams invocationParams = processCommandLine(argc, argv);
     
-    process_params params;
+    ProcessParams params;
     string commandLine = invocationParams.getCommandLine();
     
     if (invocationParams.isIdlenessChecking())
@@ -90,7 +90,7 @@ int main(int argc, char* argv[])
     if (isTrusted)
         fail("can't set trusted mode [unsupported]");
 
-    process_outcome outcome = run(commandLine, params);
+    ProcessOutcome outcome = run(commandLine, params);
 
     InvocationResult invocationResult;
     

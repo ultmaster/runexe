@@ -1,6 +1,6 @@
 # runexe
 
-Modified from the runexe from Saratov U.
+Modified from the runexe from Saratov SU.
 
 They have provided an exe in the polygon package. So this repository will be modified for *NIX only.
 
