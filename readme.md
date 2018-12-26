@@ -1,12 +1,33 @@
 # runexe
 
-Modified from the runexe from Saratov SU.
+Modified from the `runexe` written by the famous Mirzayanov from Saratov State U.
 
-They have provided an exe in the polygon package. So this repository will be modified for *NIX only.
+The motivation is to write a cross-platform runner for Hypercube, but as far as
+I'm concerned, there isn't a package for that, until I noticed runexe. 
+They have provided an exe in the polygon package; also a legendary version (old and
+unmaintained) of runexe is on the Github. So I want to modify this, so that the API 
+will eventually match the Windows version, at least for those features I'm going to use.
 
-Here is my version. (I purpose this will be everything that I will use in hypercube.)
+Here is what I have done:
+
+* Interaction
+* Wrap the old `invocationResult` in `invocationResults`.
+* `SUCCESS` to `SUCCEEDED`.
+* A total refactorization of prettification of the project code.
+* Use `rlimit` to limit the resource.
+* Add `G` as a possible unit for memory.
+* Remove other features that I'm not gonna use and also are confusing me, such as, 
+  login switch, environment setup, idleness check (on by default) and etc.
+
+No security features (restrictions on system calls) are added, as it was not intended
+to build a sandbox for some online judge. However, this could be a good start, if you
+are also seeking some solution in untrusted-code-running-with-restrictions.
+
+## Command line help 
 
 ```
+RunExe for *NIX, Version 1.0
+
 This program runs other program(s) for given period of time with specified
 restrictions.
 
@@ -39,10 +60,10 @@ Process properties:
   -e <filename> - redirect standard error to <filename>.
 ```
 
-
 ## Reference
 
-The following command line format is copied from the Windows version.
+This part is taken from the Windows version and it's only for my reference.
+
 
 ```
 runexe 2.0 version c5a5c20c3bc925a2bbb96cab39d7c21c871d2960 build 138

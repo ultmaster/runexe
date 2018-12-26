@@ -13,11 +13,12 @@ namespace interaction {
     struct StreamProxyConfiguration {
         std::string firstProcessName;
         std::string secondProcessName;
+        std::string recordFileName;
         int inputStreamFd;
         int outputStreamFd;
 
         StreamProxyConfiguration(const std::string &firstProcessName, const std::string &secondProcessName,
-                                 int inputStreamFd, int outputStreamFd);
+                                 const std::string &recordFileName, int inputStreamFd, int outputStreamFd);
     };
 
     void *streamProxyRun(void *arg);

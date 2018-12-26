@@ -1,30 +1,37 @@
+#include <cstdio>
 #include <unistd.h>
 #include "Interaction.h"
 #include "Run.h"
+#include "Configuration.h"
 
 namespace interaction {
 
     bool failed = false;
-    std::vector<std::string> failedMessages;
-    pthread_mutex_t mutex_lock;  // TODO: don't forget to initialize and destroy
+    std::string failMessage = "";
+    pthread_mutex_t mutex_lock;
     int pipeFds[8];
 
     void error(const std::string &message) {
         pthread_mutex_lock(&mutex_lock);
         failed = true;
-        failedMessages.push_back(message);
+        failMessage = message;
         pthread_mutex_unlock(&mutex_lock);
     }
 
     StreamProxyConfiguration::StreamProxyConfiguration(const std::string &firstProcessName,
-                                                       const std::string &secondProcessName, int inputStreamFd,
+                                                       const std::string &secondProcessName,
+                                                       const std::string &recordFileName, int inputStreamFd,
                                                        int outputStreamFd) : firstProcessName(firstProcessName),
                                                                              secondProcessName(secondProcessName),
+                                                                             recordFileName(recordFileName),
                                                                              inputStreamFd(inputStreamFd),
                                                                              outputStreamFd(outputStreamFd) {}
 
     void *streamProxyRun(void *arg) {
         StreamProxyConfiguration *configuration = (StreamProxyConfiguration *) arg;
+        FILE* recordFile = NULL;
+        if (!configuration->recordFileName.empty())
+            recordFile = fopen(configuration->recordFileName.c_str(), "w");
 
         const int bufferSize = 65536;
         char buffer[bufferSize];
@@ -39,7 +46,12 @@ namespace interaction {
 
             if (len == 0) break;
 
-            // TODO: record happens here
+            if (recordFile != NULL) {
+                if (fwrite(buffer, sizeof(char), len, recordFile) != len) {
+                    error("Unexpected exception while recording the output stream to file from " +
+                          configuration->firstProcessName);
+                }
+            }
 
             if (write(configuration->outputStreamFd, buffer, len) != len) {
                 error("Unexpected exception while writing to the input stream of " + configuration->secondProcessName);
@@ -47,6 +59,7 @@ namespace interaction {
             }
         }
 
+        fclose(recordFile);
         close(configuration->inputStreamFd);
         close(configuration->outputStreamFd);
         return NULL;
@@ -102,9 +115,14 @@ namespace interaction {
         pipeHelper(pipeFds[4], pipeFds[5]);     // interactor process -> proxy
         pipeHelper(pipeFds[6], pipeFds[7]);     // proxy -> program process
 
-        StreamProxyConfiguration firstProxy = StreamProxyConfiguration("program", "interactor", pipeFds[1], pipeFds[2]);
-        StreamProxyConfiguration secondProxy = StreamProxyConfiguration("interactor", "program", pipeFds[5],
-                                                                        pipeFds[6]);
+        runexe::Configuration& configuration = runexe::Configuration::getConfiguration();
+
+        StreamProxyConfiguration firstProxy = StreamProxyConfiguration("program", "interactor",
+                                                                       configuration.getInteractorRecordOutput(),
+                                                                       pipeFds[1], pipeFds[2]);
+        StreamProxyConfiguration secondProxy = StreamProxyConfiguration("interactor", "program",
+                                                                        configuration.getInteractorRecordInput(),
+                                                                        pipeFds[5], pipeFds[6]);
 
         InvocationThreadStruct programStruct(paramProgram), interactorStruct(paramInteractor);
 
@@ -151,7 +169,7 @@ namespace interaction {
         result.push_back(interactorStruct.result);
 
         if (failed) {
-            runexe::crash(failedMessages[0]);
+            runexe::crash(failMessage);
         }
 
         return result;
