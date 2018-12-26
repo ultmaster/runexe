@@ -3,6 +3,7 @@
 
 #include <string>
 #include <vector>
+#include "Process.h"
 
 namespace runexe {
     class InvocationParams {
@@ -34,9 +35,15 @@ namespace runexe {
 
         std::string getInjectDll() const;
 
+        std::string getProgramName() const;
+
         bool isTrustedProcess() const;
 
         bool isIdlenessChecking() const;
+
+        ProcessParams asProcessParams() const;
+
+        void setProgramName(const std::string &programName);
 
     private:
         long long timeLimit;
@@ -50,17 +57,15 @@ namespace runexe {
         std::string domain;
         std::string password;
         std::string injectDll;
+        std::string programName;
         bool trustedProcess;
         bool idlenessChecking;
 
+    private:
         std::string buildCommandLine(const std::vector<std::string> &params,
                                      size_t fromIndex);
 
         long long parseTimeLimit(const std::string &s);
-
-        long long parseIdlenessLimit(const std::string &s);
-
-        double parseRequiredLoad(const std::string &s);
 
         long long parseMemoryLimit(const std::string &s);
 

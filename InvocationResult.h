@@ -2,6 +2,7 @@
 #define _INVOCATION_RESULT_H_
 
 #include "InvocationVerdict.h"
+#include "Process.h"
 
 #include <string>
 
@@ -13,42 +14,49 @@ namespace runexe {
         InvocationResult(const InvocationVerdict &invocationVerdict,
                          const std::string &comment);
 
+        InvocationResult(const ProcessOutcome& outcome);
+
         InvocationVerdict getInvocationVerdict() const;
 
         int getExitCode() const;
 
-        int getUserTime() const;
+        long long getUserTime() const;
 
-        int getKernelTime() const;
+        long long getKernelTime() const;
 
         long long getMemory() const;
 
-        int getPassedTime() const;
+        long long getPassedTime() const;
 
         std::string getComment() const;
+
+        std::string getProgramName() const;
 
         void setInvocationVerdict(const InvocationVerdict &verdict);
 
         void setExitCode(int exitCode);
 
-        void setUserTime(int userTime);
+        void setUserTime(long long userTime);
 
-        void setKernelTime(int kernelTime);
+        void setKernelTime(long long kernelTime);
 
         void setMemory(long long memory);
 
-        void setPassedTime(int passedTime);
+        void setPassedTime(long long passedTime);
 
         void setComment(std::string comment);
+
+        void setProgramName(std::string programName);
 
     private:
         InvocationVerdict verdict;
         int exitCode;
-        int userTime;
-        int kernelTime;
+        long long userTime;
+        long long kernelTime;
         long long memory;
-        int passedTime;
+        long long passedTime;
         std::string comment;
+        std::string programName;
 
         void setDefaults();
     };

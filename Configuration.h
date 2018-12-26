@@ -45,6 +45,18 @@ namespace runexe {
 
         void setXmlFileName(const std::string &xmlFileName);
 
+        const std::string &getInteractor() const;
+
+        void setInteractor(const std::string &interactor);
+
+        const std::string &getInteractorRecordInput() const;
+
+        void setInteractorRecordInput(const std::string &interactorRecordInput);
+
+        const std::string &getInteractorRecordOutput() const;
+
+        void setInteractorRecordOutput(const std::string &interactorRecordOutput);
+
     private:
         Configuration();
 
@@ -58,6 +70,9 @@ namespace runexe {
         bool showKernelModeTime;
         std::string statisticsFileName;
         std::string xmlFileName;
+        std::string interactor;
+        std::string interactorRecordInput;
+        std::string interactorRecordOutput;
 
         void setDefaults();
     };

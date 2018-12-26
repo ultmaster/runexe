@@ -29,7 +29,9 @@ namespace runexe {
     void printInvocationResult(const InvocationParams &invocationParams,
                                const InvocationResult &invocationResult);
 
-    void printXmlInvocationResult(const InvocationResult &invocationResult,
+    void printXmlInvocationResult(const InvocationResult &invocationResult, const std::string &fileName);
+
+    void printXmlInvocationResult(const std::vector<InvocationResult> &invocationResults,
                                   const std::string &fileName);
 }
 

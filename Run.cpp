@@ -72,13 +72,17 @@ void runexe::crash(const string &comment) {
         quit(0);
 }
 
-InvocationParams runexe::processParams(const vector<string> &params) {
+InvocationParams runexe::processParams(const vector<string>& params) {
     if (params.size() > 1 && params[1] == "-h") {
         showHelp();
         quit();
     }
+    // get rid of the first argument before hand
+    vector<string> args;
+    for (size_t i = 1; i < params.size(); ++i)
+        args.push_back(params[i]);
 
-    return InvocationParams(params);
+    return InvocationParams(args);
 }
 
 InvocationParams runexe::processCommandLine(int argc, char *argv[]) {
@@ -113,6 +117,12 @@ void runexe::printTimes(double userTime, double kernelTime,
     }
 }
 
+void runexe::printXmlInvocationResult(const InvocationResult &invocationResult, const std::string &fileName) {
+    vector<InvocationResult> results;
+    results.push_back(invocationResult);
+    printXmlInvocationResult(results, fileName);
+}
+
 void runexe::printInvocationResult(const InvocationParams &invocationParams,
                                    const InvocationResult &invocationResult) {
     InvocationVerdict invocationVerdict = invocationResult.getInvocationVerdict();
@@ -131,7 +141,7 @@ void runexe::printInvocationResult(const InvocationParams &invocationParams,
 
     switch (invocationVerdict) {
         case SUCCESS :
-            cout << "Program successfully terminated" << endl
+            cout << invocationResult.getProgramName() << " successfully terminated" << endl
                  << "  exit code:     " << exitCode << endl,
                     printTimes(userTime, kernelTime),
                     cout << "  time passed:   " << passedTime << " sec" << endl
@@ -183,7 +193,7 @@ void runexe::printInvocationResult(const InvocationParams &invocationParams,
     }
 }
 
-void runexe::printXmlInvocationResult(const InvocationResult &invocationResult,
+void runexe::printXmlInvocationResult(const vector<InvocationResult> &invocationResults,
                                       const string &fileName) {
     static bool firstCall = true;
 
@@ -193,30 +203,36 @@ void runexe::printXmlInvocationResult(const InvocationResult &invocationResult,
         firstCall = false;
 
     vector<string> result;
-    result.push_back("<?xml version = \"1.1\" encoding = \"UTF-8\"?>");
-    result.push_back("");
-    result.push_back("<invocationResult>");
-    result.push_back("    <invocationVerdict>" +
-                     invocationVerdictToString(invocationResult.getInvocationVerdict()) +
-                     "</invocationVerdict>");
-    result.push_back("    <exitCode>" +
-                     Strings::integerToString(invocationResult.getExitCode()) +
-                     "</exitCode>");
-    result.push_back("    <processorUserModeTime>" +
-                     Strings::integerToString(invocationResult.getUserTime()) +
-                     "</processorUserModeTime>");
-    result.push_back("    <processorKernelModeTime>" +
-                     Strings::integerToString(invocationResult.getKernelTime()) +
-                     "</processorKernelModeTime>");
-    result.push_back("    <passedTime>" +
-                     Strings::integerToString(invocationResult.getPassedTime()) +
-                     "</passedTime>");
-    result.push_back("    <consumedMemory>" +
-                     Strings::integerToString(invocationResult.getMemory()) +
-                     "</consumedMemory>");
-    result.push_back("    <comment>" + invocationResult.getComment() +
-                     "</comment>");
-    result.push_back("</invocationResult>");
+    result.push_back("<?xml version=\"1.1\" encoding=\"UTF-8\"?>");
+    result.push_back("<invocationResults>");
+
+    for (size_t i = 0; i < invocationResults.size(); ++i) {
+        const InvocationResult &invocationResult = invocationResults[i];
+        result.push_back("<invocationResult id=\"" + invocationResult.getProgramName() + "\">");
+        result.push_back("    <invocationVerdict>" +
+                         invocationVerdictToString(invocationResult.getInvocationVerdict()) +
+                         "</invocationVerdict>");
+        result.push_back("    <exitCode>" +
+                         Strings::integerToString(invocationResult.getExitCode()) +
+                         "</exitCode>");
+        result.push_back("    <processorUserModeTime>" +
+                         Strings::integerToString(invocationResult.getUserTime()) +
+                         "</processorUserModeTime>");
+        result.push_back("    <processorKernelModeTime>" +
+                         Strings::integerToString(invocationResult.getKernelTime()) +
+                         "</processorKernelModeTime>");
+        result.push_back("    <passedTime>" +
+                         Strings::integerToString(invocationResult.getPassedTime()) +
+                         "</passedTime>");
+        result.push_back("    <consumedMemory>" +
+                         Strings::integerToString(invocationResult.getMemory()) +
+                         "</consumedMemory>");
+        result.push_back("    <comment>" + invocationResult.getComment() +
+                         "</comment>");
+        result.push_back("</invocationResult>");
+    }
+
+    result.push_back("</invocationResults>");
 
     int resultSize = (int) result.size();
 

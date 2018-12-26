@@ -1,3 +1,6 @@
+#include <memory>
+#include <vector>
+
 #define _CRT_SECURE_NO_DEPRECATE
 
 #include "Strings.h"
@@ -100,5 +103,28 @@ long long Strings::parseInt64(const string &s) {
     if (!checkIntegerIdentialToString(s, result))
         crash("expected int64 but received '" + s + "'");
 
+    return result;
+}
+
+vector<string> Strings::tokenizeCommandLine(const string &commandLine) {
+    vector<string> result;
+    bool inQuotes = false;
+    string buffer;
+    for (size_t i = 0; i < commandLine.length(); i++) {
+        if (commandLine[i] == '\"') {
+            inQuotes = !inQuotes;
+            continue;
+        }
+        if (!inQuotes && commandLine[i] <= ' ') {
+            if (!buffer.empty() || (i > 0 && commandLine[i - 1] == '\"')) {
+                result.push_back(buffer);
+                buffer = "";
+            }
+            continue;
+        }
+        buffer.append(1, commandLine[i]);
+    }
+    if (!buffer.empty())
+        result.push_back(buffer);
     return result;
 }

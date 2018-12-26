@@ -4,11 +4,9 @@ Modified from the runexe from Saratov SU.
 
 They have provided an exe in the polygon package. So this repository will be modified for *NIX only.
 
-The features that are planned to support are:
+Here is my version. (I purpose this will be everything that I will use in hypercube.)
 
 ```
-runexe 2.0 version c5a5c20c3bc925a2bbb96cab39d7c21c871d2960 build 138
-
 This program runs other program(s) for given period of time with specified
 restrictions.
 
@@ -18,9 +16,6 @@ Command line format:
 Global options:
   -help         - show help
   -xml          - print result in xml format (otherwise, use human-readable)
-  -show-kernel-mode-time - include kernel-mode time in human-readable format
-                  (always included in xml)
-  -x            - return process exit code (not implemented)
   -interactor="<process properties> interactor <parameters>"
                   INTERACTOR MODE
     Launch another process and cross-connect its stdin&stdout with the main
@@ -38,8 +33,6 @@ Process properties:
   -m <value>    - memory limit. Terminate if anonymous virtual memory of the
                   process exceeds <value> bytes. Use suffixes K, M, G to
                   specify kilo, mega, gigabytes.
-  -D k=v        - environment. If any is specified, existing environment is
-                  cleared.
   -d <value>    - current directory for the process.
   -i <filename> - redirect standard input to <filename>.
   -o <filename> - redirect standard output to <filename>.

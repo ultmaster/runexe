@@ -24,6 +24,7 @@ Configuration &Configuration::getConfiguration() {
 }
 
 void Configuration::setDefaults() {
+    setShowKernelModeTime(true);
     setReturnExitCode(RETURN_EXIT_CODE);
     setScreenOutput(SCREEN_OUTPUT);
     setXmlOutput(XML_OUTPUT);
@@ -78,4 +79,28 @@ string Configuration::getXmlFileName() const {
 
 void Configuration::setXmlFileName(const std::string &xmlFileName) {
     this->xmlFileName = xmlFileName;
+}
+
+const string &Configuration::getInteractor() const {
+    return interactor;
+}
+
+void Configuration::setInteractor(const string &interactor) {
+    Configuration::interactor = interactor;
+}
+
+const string &Configuration::getInteractorRecordInput() const {
+    return interactorRecordInput;
+}
+
+void Configuration::setInteractorRecordInput(const string &interactorRecordInput) {
+    Configuration::interactorRecordInput = interactorRecordInput;
+}
+
+const string &Configuration::getInteractorRecordOutput() const {
+    return interactorRecordOutput;
+}
+
+void Configuration::setInteractorRecordOutput(const string &interactorRecordOutput) {
+    Configuration::interactorRecordOutput = interactorRecordOutput;
 }

@@ -2,6 +2,7 @@
 #define _RUNEXE_STRINGS_H_
 
 #include <string>
+#include <vector>
 #include <cstdarg>
 
 namespace runexe {
@@ -28,6 +29,8 @@ namespace runexe {
         static double parseDouble(const std::string &s);
 
         static long long parseInt64(const std::string &s);
+
+        static std::vector<std::string> tokenizeCommandLine(const std::string &commandLine);
     };
 }
 

@@ -20,6 +20,7 @@ void InvocationParams::setDefaults() {
     injectDll = "";
     trustedProcess = false;
     idlenessChecking = true;
+    programName = "program";
 }
 
 InvocationParams::InvocationParams(const vector<string> &cmdLineParams) {
@@ -29,183 +30,75 @@ InvocationParams::InvocationParams(const vector<string> &cmdLineParams) {
 
     Configuration &configuration = Configuration::getConfiguration();
 
-    for (size_t currentTokenNumber = 1; currentTokenNumber < tokensCount; ++currentTokenNumber) {
+    for (size_t currentTokenNumber = 0; currentTokenNumber < tokensCount; ++currentTokenNumber) {
         string currentToken = cmdLineParams[currentTokenNumber];
 
         if (currentToken == "-t") {
             if (currentTokenNumber == tokensCount - 1)
                 crash("expected time limit value after \"-t\"");
-
             currentToken = cmdLineParams[++currentTokenNumber];
             timeLimit = parseTimeLimit(currentToken);
-
             continue;
         }
 
         if (currentToken == "-m") {
             if (currentTokenNumber == tokensCount - 1)
                 crash("expected memory limit value after \"-m\"");
-
             currentToken = cmdLineParams[++currentTokenNumber];
             memoryLimit = parseMemoryLimit(currentToken);
-
             continue;
         }
 
         if (currentToken == "-d") {
             if (currentTokenNumber == tokensCount - 1)
                 crash("expected directory after \"-d\"");
-
             currentToken = cmdLineParams[++currentTokenNumber];
             homeDirectory = currentToken;
-
-            continue;
-        }
-
-        if (currentToken == "-l") {
-            if (currentTokenNumber == tokensCount - 1)
-                crash("expected login name after \"-l\"");
-
-            currentToken = cmdLineParams[++currentTokenNumber];
-
-            size_t slashIdx = currentToken.find("/");
-            if (slashIdx != string::npos) {
-                userName = currentToken.substr(0, slashIdx);
-                domain = currentToken.substr(slashIdx + 1);
-            } else {
-                slashIdx = currentToken.find("\\");
-                if (slashIdx != string::npos) {
-                    userName = currentToken.substr(0, slashIdx);
-                    domain = currentToken.substr(slashIdx + 1);
-                } else
-                    userName = currentToken;
-            }
-
-            continue;
-        }
-
-        if (currentToken == "-p") {
-            if (currentTokenNumber == tokensCount - 1)
-                crash("expected password after \"-p\"");
-
-            currentToken = cmdLineParams[++currentTokenNumber];
-            password = currentToken;
-
-            continue;
-        }
-
-        if (currentToken == "-j") {
-            if (currentTokenNumber == tokensCount - 1)
-                crash("expected dll file name after \"-j\"");
-
-            currentToken = cmdLineParams[++currentTokenNumber];
-            injectDll = currentToken;
-
             continue;
         }
 
         if (currentToken == "-i") {
             if (currentTokenNumber == tokensCount - 1)
                 crash("expected file name after \"-i\"");
-
             currentToken = cmdLineParams[++currentTokenNumber];
             redirectInput = currentToken;
-
             continue;
         }
 
         if (currentToken == "-o") {
             if (currentTokenNumber == tokensCount - 1)
                 crash("expected file name after \"-o\"");
-
             currentToken = cmdLineParams[++currentTokenNumber];
             redirectOutput = currentToken;
-
             continue;
         }
 
         if (currentToken == "-e") {
             if (currentTokenNumber == tokensCount - 1)
                 crash("expected file name after \"-e\"");
-
             currentToken = cmdLineParams[++currentTokenNumber];
             redirectError = currentToken;
-
             continue;
-        }
-
-        if (currentToken == "-x") {
-            configuration.setReturnExitCode(true);
-
-            continue;
-        }
-
-        if (currentToken == "-q") {
-            configuration.setScreenOutput(false);
-
-            continue;
-        }
-
-
-        if (currentToken == "-z") {
-            trustedProcess = true;
-
-            continue;
-        }
-
-        if (currentToken == "-s") {
-            fail("not implemented option \"-s\"");
-            /*
-            if (currentTokenNumber == tokensCount - 1)
-            crash("expected file name after \"-s\"");
-
-            currentToken = cmdLineParams[++currentTokenNumber];
-            configuration.setStatisticsFileName(currentToken);
-
-            continue;
-            */
-        }
-
-        if (currentToken == "-D") {
-            fail("not implemented option \"-D\"");
-            /*
-            if (currentTokenNumber == tokensCount - 1)
-            crash("expected var=value after \"-s\"");
-
-            currentToken = cmdLineParams[++currentTokenNumber];
-            ////////////////////////////////////////////
-
-            continue;
-            */
         }
 
         if (currentToken == "-xml" || currentToken == "--xml") {
             configuration.setScreenOutput(false);
             configuration.setXmlOutput(true);
-
             continue;
         }
 
-        if (currentToken == "-xmltof" || currentToken == "--xml-to-file") {
-            if (currentTokenNumber == tokensCount - 1)
-                crash("expected file name after \"--xml-to-file\"");
-
-            currentToken = cmdLineParams[++currentTokenNumber];
-            configuration.setXmlOutput(true);
-            configuration.setXmlFileName(currentToken);
-
+        if (currentToken.find("--interactor=") == 0 || currentToken.find("-interactor=") == 0) {
+            configuration.setInteractor(currentToken.substr(currentToken.find('=') + 1));
             continue;
         }
 
-        if (currentToken == "--show-kernel-mode-time") {
-            configuration.setShowKernelModeTime(true);
-
+        if (currentToken.find("--ri=") == 0 || currentToken.find("-ri=") == 0) {
+            configuration.setInteractorRecordInput(currentToken.substr(currentToken.find('=') + 1));
             continue;
         }
 
-        if (currentToken == "--no-idleness-check") {
-            idlenessChecking = false;
-
+        if (currentToken.find("--ro=") == 0 || currentToken.find("-ro=") == 0) {
+            configuration.setInteractorRecordOutput(currentToken.substr(currentToken.find('=') + 1));
             continue;
         }
 
@@ -280,7 +173,8 @@ long long InvocationParams::parseMemoryLimit(const string &s) {
 
         memoryLimit *= 1024;
     }
-        // In mebibytes (suffix "M").
+
+    // In mebibytes (suffix "M").
     else if (s.find("M") == s.length() - 1 || s.find("m") == s.length() - 1) {
         memoryLimit = Strings::parseInt64(s.substr(0, s.length() - 1));
 
@@ -289,7 +183,18 @@ long long InvocationParams::parseMemoryLimit(const string &s) {
 
         memoryLimit *= 1024 * 1024;
     }
-        // In bytes (no suffix).
+
+    // In gigabytes (suffix "G").
+    else if (s.find("G") == s.length() - 1 || s.find("g") == s.length() - 1) {
+        memoryLimit = Strings::parseInt64(s.substr(0, s.length() - 1));
+
+        if (memoryLimit < 0 || memoryLimit >= INFINITE_LIMIT_INT64 / 1024 / 1024 / 1024)
+            crash("invalid memory limit");
+
+        memoryLimit *= 1024 * 1024 * 1024;
+    }
+
+    // In bytes (no suffix).
     else {
         memoryLimit = Strings::parseInt64(s);
 
@@ -350,4 +255,46 @@ string InvocationParams::getInjectDll() const {
 
 bool InvocationParams::isIdlenessChecking() const {
     return idlenessChecking;
+}
+
+ProcessParams InvocationParams::asProcessParams() const {
+    ProcessParams params;
+    params.command_line = getCommandLine();
+
+    if (isIdlenessChecking())
+        params.check_idleness = true;
+
+    long long timeLimit = getTimeLimit();
+    if (timeLimit != InvocationParams::INFINITE_LIMIT_INT64)
+        params.time_limit = timeLimit;
+
+    long long memoryLimit = getMemoryLimit();
+    if (memoryLimit != InvocationParams::INFINITE_LIMIT_INT64)
+        params.memory_limit = memoryLimit;
+
+    string redirectInput = getRedirectInput();
+    if (!redirectInput.empty())
+        params.input_file = redirectInput;
+
+    string redirectOutput = getRedirectOutput();
+    if (!redirectOutput.empty())
+        params.output_file = redirectOutput;
+
+    string redirectError = getRedirectError();
+    if (!redirectError.empty())
+        params.error_file = redirectError;
+
+    string homeDirectory = getHomeDirectory();
+    if (!homeDirectory.empty())
+        params.directory = homeDirectory;
+
+    return params;
+}
+
+void InvocationParams::setProgramName(const string &programName) {
+    InvocationParams::programName = programName;
+}
+
+std::string InvocationParams::getProgramName() const {
+    return programName;
 }

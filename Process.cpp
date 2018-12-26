@@ -11,6 +11,7 @@
 #include <unistd.h>
 
 #include "Process.h"
+#include "Strings.h"
 
 using namespace std;
 
@@ -34,6 +35,15 @@ struct Process {
     /* Redirection file for stderr, empty if not used. */
     string redirectStderrFile;
 
+    /* File descriptors that will be closed in child process */
+    vector<int> closingFds;
+
+    /* Redirect descriptor for input, this will preempt redirectStdinFile if it's >=0 */
+    int redirectInputDescriptor;
+
+    /* Redirect descriptor for output */
+    int redirectOutputDescriptor;
+
     /* Is true iff process completed execution (completed, interrupted, signalled and so on). */
     bool completed;
     /* Process pid. */
@@ -53,29 +63,6 @@ struct Process {
     /* Check idleness? */
     bool checkIdleness;
 };
-
-static vector<string> tokenizeCommandLine(const string &commandLine) {
-    vector<string> result;
-    bool inQuotes = false;
-    string buffer;
-    for (size_t i = 0; i < commandLine.length(); i++) {
-        if (commandLine[i] == '\"') {
-            inQuotes = !inQuotes;
-            continue;
-        }
-        if (!inQuotes && commandLine[i] <= ' ') {
-            if (!buffer.empty() || (i > 0 && commandLine[i - 1] == '\"')) {
-                result.push_back(buffer);
-                buffer = "";
-            }
-            continue;
-        }
-        buffer.append(1, commandLine[i]);
-    }
-    if (!buffer.empty())
-        result.push_back(buffer);
-    return result;
-}
 
 static string formatByAp(const char *format, va_list ap) {
     // TODO: Possible buffer overflow!
@@ -116,6 +103,11 @@ static void redirectFd(int fd, const char *const fileName, const char *const mod
         fail("Can't setup descriptor for redirection from/to \"%s\"", fileName);
 }
 
+static void redirectFd(int fd, int fileno) {
+    if (dup2(fileno, fd) == -1)
+        fail("Can't setup descriptor for redirection from/to \"%d\"", fileno);
+}
+
 void rlim(int resource, rlim_t limit) {
     rlimit rl;
     rl.rlim_cur = limit;
@@ -133,16 +125,34 @@ static void execute(Process &p) {
         exit(EXIT_FAILURE);
 
     // Setup redirection.
-    redirectFd(0, p.redirectStdinFile.c_str(), "r");
-    redirectFd(1, p.redirectStdoutFile.c_str(), "w");
+    if (p.redirectInputDescriptor != -1)
+        redirectFd(0, p.redirectInputDescriptor);
+    else
+        redirectFd(0, p.redirectStdinFile.c_str(), "r");
+
+    if (p.redirectOutputDescriptor != -1)
+        redirectFd(1, p.redirectOutputDescriptor);
+    else
+        redirectFd(1, p.redirectStdoutFile.c_str(), "w");
+
     redirectFd(2, p.redirectStderrFile.c_str(), "w");
+
+    // Close fds that will be longer used
+    for (size_t i = 0; i < p.closingFds.size(); ++i)
+        close(p.closingFds[i]);
 
     // Setup limits.
 
     if (p.timeLimit > 0)
-        rlim(RLIMIT_CPU, p.timeLimit / 1000 + 5); // Given + 5 seconds.
-    if (p.memoryLimit > 0)
-        rlim(RLIMIT_AS, p.memoryLimit + 1024 * 1024 * 32); // Given + 32 megabytes.
+        rlim(RLIMIT_CPU, (rlim_t) (p.timeLimit / 1000 + 1)); // Given + 1 seconds.
+    if (p.memoryLimit > 0) {
+        rlim_t memory_limit = (rlim_t) min(p.memoryLimit + 1024 * 1024 * 32, (long long) INT_MAX); // Given + 32 megabytes.
+#ifndef __APPLE__
+        rlim(RLIMIT_STACK, memory_limit);  // does not work, I don't know why
+        // TODO: check this works on linux
+#endif
+        rlim(RLIMIT_AS, memory_limit);
+    }
 
     char *commandLine = strdup(p.commandLine.c_str());
     char **argv = new char *[p.args.size() + 2];
@@ -223,7 +233,7 @@ static void waitFor(Process &p) {
                 p.completed = true;
                 p.exitCode = -1;
                 p.state = MEMORY_EXCEEDED;
-                p.comment = format("Process has been memory limited [memoryLimit=%lld kb]", p.timeLimit / 1024);
+                p.comment = format("Process has been memory limited [memoryLimit=%lld kb]", p.memoryLimit / 1024);
                 return;
             }
             if (wres == -1 && errno == EINTR) {
@@ -238,17 +248,18 @@ static void waitFor(Process &p) {
                 p.state = FAILED;
                 p.comment = "Process has been killed [WIFSTOPPED]";
                 return;
+            } else if (wres == p.pid && WIFSIGNALED(status)) {
+                p.completed = true;
+                p.exitCode = -1;
+                printf("signal = %d, exit code = %d\n", WIFSIGNALED(status), WIFEXITED(status));
+                p.comment = "Process has been killed [WIFSIGNALED]";
+                p.state = FAILED;
+                return;
             } else if (wres == p.pid && WIFEXITED(status)) {
                 p.completed = true;
                 p.exitCode = WEXITSTATUS(status);
                 p.comment = "";
                 p.state = EXITED;
-                return;
-            } else if (wres == p.pid && WIFSIGNALED(status)) {
-                p.completed = true;
-                p.exitCode = -1;
-                p.comment = "Process has been killed [WIFSIGNALED]";
-                p.state = FAILED;
                 return;
             } else {
                 p.completed = true;
@@ -268,7 +279,7 @@ static long long time_ms() {
 }
 
 static ProcessOutcome run(Process &p) {
-    if (p.redirectStdoutFile.empty()) {
+    if (p.redirectStdoutFile.empty() && p.redirectOutputDescriptor == -1) {
         char name[] = "/tmp/process_output_XXXXXX";
         close(mkstemp(name));
         p.redirectStdoutFile = name;
@@ -292,6 +303,12 @@ static ProcessOutcome run(Process &p) {
         execute(p);
         exit(EXIT_FAILURE);
     } else {
+        // closing file descriptors that will no longer be used
+        if (p.redirectInputDescriptor != -1)
+            close(p.redirectInputDescriptor);
+        if (p.redirectOutputDescriptor != -1)
+            close(p.redirectOutputDescriptor);
+
         if (p.pid > 0)
             waitFor(p);
         kill(p.pid, SIGKILL);
@@ -308,7 +325,7 @@ static ProcessOutcome run(Process &p) {
     return result;
 }
 
-ProcessOutcome run(const std::string &command_line, const ProcessParams &params) {
+ProcessOutcome run(const ProcessParams &params) {
     Process p;
     p.directory = params.directory;
     p.timeLimit = params.time_limit;
@@ -317,8 +334,11 @@ ProcessOutcome run(const std::string &command_line, const ProcessParams &params)
     p.redirectStdoutFile = params.output_file;
     p.redirectStderrFile = params.error_file;
     p.checkIdleness = params.check_idleness;
+    p.closingFds = params.closing_fds;
+    p.redirectInputDescriptor = params.input_fd;
+    p.redirectOutputDescriptor = params.output_fd;
 
-    vector<string> args = tokenizeCommandLine(command_line);
+    vector<string> args = runexe::Strings::tokenizeCommandLine(params.command_line);
     p.commandLine = args[0];
     for (size_t i = 1; i < args.size(); i++)
         p.args.push_back(args[i]);

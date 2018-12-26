@@ -8,7 +8,7 @@ using namespace std;
 string runexe::invocationVerdictToString(InvocationVerdict verdict) {
     switch (verdict) {
         case SUCCESS :
-            return "SUCCESS";
+            return "SUCCEEDED";
         case FAIL :
             return "FAIL";
         case CRASH :

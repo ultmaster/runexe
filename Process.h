@@ -2,6 +2,7 @@
 #define __process_h_
 
 #include <string>
+#include <vector>
 
 enum ProcessState {
     BEFORE = 0,
@@ -40,15 +41,23 @@ struct ProcessOutcome {
 struct ProcessParams {
     long long time_limit;
     long long memory_limit;
+    std::string command_line;
     std::string input_file;
     std::string output_file;
     std::string error_file;
     std::string directory;
     bool check_idleness;
+
+    std::vector<int> closing_fds;
+    int input_fd;
+    int output_fd;
+
+    ProcessParams() : time_limit(0), memory_limit(0), input_fd(-1), output_fd(-1), check_idleness(false) {
+
+    }
 };
 
-ProcessOutcome run(const std::string &command_line,
-                   const ProcessParams &params);
+ProcessOutcome run(const ProcessParams &params);
 
 #endif
 
