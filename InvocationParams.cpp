@@ -86,6 +86,16 @@ InvocationParams::InvocationParams(const vector<string> &cmdLineParams) {
             configuration.setXmlOutput(true);
             continue;
         }
+        
+        if (currentToken == "-xmltof" || currentToken == "--xml-to-file") {
+            configuration.setScreenOutput(false);
+            configuration.setXmlOutput(true);
+            if (currentTokenNumber == tokensCount - 1)
+                crash("expected file name after \"" + currentToken + "\"");
+            currentToken = cmdLineParams[++currentTokenNumber];
+            configuration.setXmlFileName(currentToken);
+            continue;
+        }
 
         if (currentToken.find("--interactor=") == 0 || currentToken.find("-interactor=") == 0) {
             configuration.setInteractor(currentToken.substr(currentToken.find('=') + 1));
