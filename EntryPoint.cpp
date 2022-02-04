@@ -1,3 +1,6 @@
+#include <cstdio>
+#include <cstdlib>
+
 #include "Run.h"
 #include "Interaction.h"
 #include "Process.h"

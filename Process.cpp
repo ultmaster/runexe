@@ -6,8 +6,15 @@
 #include <iostream>
 #include <vector>
 #include <csignal>
+#include <cstdlib>
+#include <unistd.h>
+#include <climits>
+#include <errno.h>
 
+#include <sys/wait.h>
+#include <sys/resource.h>
 #include <sys/time.h>
+
 #include <unistd.h>
 
 #include "Process.h"

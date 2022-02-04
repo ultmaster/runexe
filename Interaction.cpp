@@ -1,5 +1,7 @@
 #include <cstdio>
 #include <unistd.h>
+#include <signal.h>
+
 #include "Interaction.h"
 #include "Run.h"
 #include "Configuration.h"
