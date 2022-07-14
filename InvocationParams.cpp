@@ -2,6 +2,7 @@
 #include "Configuration.h"
 #include "Run.h"
 #include "Strings.h"
+#include <string>
 
 using namespace runexe;
 using namespace std;
@@ -213,6 +214,33 @@ long long InvocationParams::parseMemoryLimit(const string &s) {
     }
 
     return memoryLimit;
+}
+
+void InvocationParams::setTimeLimit(long long timeLimit) {
+    this->timeLimit = timeLimit;
+}
+
+
+void InvocationParams::setMemoryLimit(long long memoryLimit) {
+    this->memoryLimit = memoryLimit;
+}
+
+void InvocationParams::setRedirectInput(const std::string &inputFilePath) {
+    this->redirectInput = inputFilePath;
+}
+
+
+void InvocationParams::setRedirectOutput(const std::string &outputFilePath) {
+    this->redirectOutput = outputFilePath;
+}
+
+void InvocationParams::setRedirectError(const std::string &errorFilePath) {
+    this->redirectError = errorFilePath;
+}
+
+
+void InvocationParams::setHomeDirectory(const std::string &homeDirectory) {
+    this->homeDirectory = homeDirectory;
 }
 
 long long InvocationParams::getTimeLimit() const {

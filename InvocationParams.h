@@ -15,15 +15,28 @@ namespace runexe {
 
         long long getTimeLimit() const;
 
+
+        void setTimeLimit(long long timeLimit);
+
         long long getMemoryLimit() const;
 
+        void setMemoryLimit(long long memoryLimit);
+
         std::string getRedirectInput() const;
+        
+        void setRedirectInput(const std::string &inputFilePath);
 
         std::string getRedirectOutput() const;
 
+        void setRedirectOutput(const std::string &outputFilePath);
+
         std::string getRedirectError() const;
 
+        void setRedirectError(const std::string &errorFilePath);
+
         std::string getHomeDirectory() const;
+
+        void setHomeDirectory(const std::string &homeDirectory);
 
         std::string getCommandLine() const;
 
