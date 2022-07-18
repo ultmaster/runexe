@@ -5,5 +5,16 @@ set(CMAKE_CXX_STANDARD 98)
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pthread")
 
-set(SOURCE_FILES EntryPoint.cpp Configuration.cpp InvocationParams.cpp InvocationResult.cpp InvocationVerdict.cpp Strings.cpp Run.cpp Process.cpp Interaction.cpp)
-add_executable(runexe ${SOURCE_FILES})
+set(SOURCE_FILES 
+    src/configuration.cpp 
+    src/invocation_params.cpp 
+    src/invocation_result.cpp 
+    src/invocation_verdict.cpp 
+    src/strings.cpp 
+    src/run.cpp 
+    src/process.cpp 
+    src/interaction.cpp)
+
+add_library(limiter STATIC ${SOURCE_FILES} src/limiter.cpp)
+
+add_executable(runexe ${SOURCE_FILES} src/entrypoint.cpp)

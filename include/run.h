@@ -1,9 +1,9 @@
 #ifndef _RUN_H_
 #define _RUN_H_
 
-#include "Configuration.h"
-#include "InvocationParams.h"
-#include "InvocationResult.h"
+#include "configuration.h"
+#include "invocation_params.h"
+#include "invocation_result.h"
 
 #include <string>
 #include <vector>

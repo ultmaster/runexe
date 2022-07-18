@@ -1,10 +1,10 @@
 #include <cstdio>
 #include <cstdlib>
 
-#include "Run.h"
-#include "Interaction.h"
-#include "Process.h"
-#include "Strings.h"
+#include "run.h"
+#include "interaction.h"
+#include "process.h"
+#include "strings.h"
 
 using namespace runexe;
 

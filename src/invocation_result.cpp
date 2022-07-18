@@ -1,7 +1,7 @@
-#include "InvocationResult.h"
-#include "InvocationVerdict.h"
-#include "Configuration.h"
-#include "Run.h"
+#include "../include/invocation_result.h"
+#include "../include/invocation_verdict.h"
+#include "../include/configuration.h"
+#include "../include/run.h"
 
 #include <string>
 

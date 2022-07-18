@@ -3,8 +3,8 @@
 
 #define _CRT_SECURE_NO_DEPRECATE
 
-#include "Strings.h"
-#include "Run.h"
+#include "../include/strings.h"
+#include "../include/run.h"
 
 #include <string>
 #include <cctype>

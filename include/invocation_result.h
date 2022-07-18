@@ -1,8 +1,8 @@
 #ifndef _INVOCATION_RESULT_H_
 #define _INVOCATION_RESULT_H_
 
-#include "InvocationVerdict.h"
-#include "Process.h"
+#include "invocation_verdict.h"
+#include "process.h"
 
 #include <string>
 

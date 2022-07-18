@@ -17,8 +17,8 @@
 
 #include <unistd.h>
 
-#include "Process.h"
-#include "Strings.h"
+#include "../include/process.h"
+#include "../include/strings.h"
 
 using namespace std;
 

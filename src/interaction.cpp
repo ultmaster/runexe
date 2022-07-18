@@ -2,9 +2,9 @@
 #include <unistd.h>
 #include <signal.h>
 
-#include "Interaction.h"
-#include "Run.h"
-#include "Configuration.h"
+#include "../include/interaction.h"
+#include "../include/run.h"
+#include "../include/configuration.h"
 
 namespace interaction {
 

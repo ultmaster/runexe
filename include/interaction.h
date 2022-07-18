@@ -5,8 +5,8 @@
 #include <vector>
 #include <pthread.h>
 
-#include "InvocationParams.h"
-#include "InvocationResult.h"
+#include "invocation_params.h"
+#include "invocation_result.h"
 
 namespace interaction {
 

@@ -1,5 +1,5 @@
-#include "Run.h"
-#include "Strings.h"
+#include "../include/run.h"
+#include "../include/strings.h"
 
 #include <string>
 #include <vector>

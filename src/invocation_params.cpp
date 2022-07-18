@@ -1,7 +1,7 @@
-#include "InvocationParams.h"
-#include "Configuration.h"
-#include "Run.h"
-#include "Strings.h"
+#include "../include/invocation_params.h"
+#include "../include/configuration.h"
+#include "../include/run.h"
+#include "../include/strings.h"
 #include <string>
 
 using namespace runexe;
@@ -22,6 +22,10 @@ void InvocationParams::setDefaults() {
     trustedProcess = false;
     idlenessChecking = true;
     programName = "program";
+}
+
+InvocationParams::InvocationParams() {
+    setDefaults();
 }
 
 InvocationParams::InvocationParams(const vector<string> &cmdLineParams) {
@@ -220,7 +224,6 @@ void InvocationParams::setTimeLimit(long long timeLimit) {
     this->timeLimit = timeLimit;
 }
 
-
 void InvocationParams::setMemoryLimit(long long memoryLimit) {
     this->memoryLimit = memoryLimit;
 }
@@ -238,9 +241,37 @@ void InvocationParams::setRedirectError(const std::string &errorFilePath) {
     this->redirectError = errorFilePath;
 }
 
-
 void InvocationParams::setHomeDirectory(const std::string &homeDirectory) {
     this->homeDirectory = homeDirectory;
+}
+
+
+void InvocationParams::setCommandLine(const std::string &commandLine) {
+    this->commandLine = commandLine;
+}
+
+void InvocationParams::setTrustedProcess(bool trustedProcess) {
+    this->trustedProcess = trustedProcess;
+}
+
+void InvocationParams::setUserName(const std::string &userName) {
+    this->userName = userName;
+}
+
+void InvocationParams::setDomain(const std::string &domain) {
+    this->domain = domain;
+}
+
+void InvocationParams::setPassword(const std::string &password) {
+    this->password = password;
+}
+
+void InvocationParams::setInjectDll(const std::string &injectDll) {
+    this->injectDll = injectDll;
+}
+
+void InvocationParams::setIdlenessChecking(bool checkIdleness) {
+    this->idlenessChecking = checkIdleness;
 }
 
 long long InvocationParams::getTimeLimit() const {
